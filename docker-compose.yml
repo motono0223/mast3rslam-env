@@ -1,0 +1,23 @@
+services:
+  mast3r-3dgs:
+    build: .
+    container_name: mast3r_3dgs_env
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - ./data:/app/data       # データ共有用
+      - ./scripts:/app/scripts # スクリプト共有用
+      - ./output:/app/output   # 出力保存用
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    tty: true
+    stdin_open: true
+    # コンテナ起動時にConda環境を自動で有効化してシェルを維持
+    command: /bin/bash -c "source activate mast3r && /bin/bash"
